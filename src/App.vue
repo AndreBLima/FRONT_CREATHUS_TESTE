@@ -27,8 +27,8 @@
           <label>Foto</label>
            <div class="file-field input-field">
                 <div class="btn">
-                  <span>File</span>
-                  <input type="file">
+                  <span>Adicionar Foto</span>
+                  <input type="file" @change="updateProfile">
                </div>
                <div class="file-path-wrapper">
                   <input class="file-path validate" type="text">
@@ -68,7 +68,7 @@
             <td>{{pessoa.nome}}</td>
             <td>{{pessoa.idade}}</td>
             <td>{{pessoa.email}}</td>
-            <td>{{pessoa.foto}}</td>
+            <td><img class="materialboxed responsive-img" width="75" :src="pessoa.foto"></td>
             <td>{{pessoa.escolaridade}}</td>
             <td>
               <button @click="editar(pessoa)" class="waves-effect btn-small blue darken-1"><i class="material-icons">create</i></button>
@@ -89,6 +89,7 @@
 <script>
 
 import Formulario from './services/formulario'
+
 export default {
   
   data(){
@@ -98,20 +99,32 @@ export default {
         nome:'',
         idade:'',
         email:'',
-        foto:'asda',
+        foto:'',
         escolaridade:''
       },
       formulario: [],
       opcoes: ['Ensino Fundamental','Ensino Medio','Ensino Superior'],
-      errors: []
+      errors: [],
+      profile:''
+      
     }
   },
 
   mounted(){
     this.listar()
   },
+  
+  computed: {
+    myImage(){
+      return 'data:image/png;base64, ${this.image}'
+    }
+  },
+  created (){
+    this.loadImage()
+  },
 
   methods:{
+
     listar(){
 
       Formulario.listar().then(resposta => {
@@ -143,6 +156,7 @@ export default {
         alert('Erro ao salvar')
       })
       }
+
         
   },
 
@@ -163,10 +177,23 @@ export default {
       })
     }
 
+      },
+
+      updateProfile(event){
+
+      let file = event.target.files[0];
+      let reader = new FileReader();
+      reader.onloadend = (file) => {
+        this.file = file
+        this.pessoa.foto = reader.result;
       }
+      reader.readAsDataURL(file)
+      },
 
+      loadImage(){
+        this.image=this.pessoa.foto.result
+      }
       
-
 }}
 
 </script>
